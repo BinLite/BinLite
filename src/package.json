@@ -1,0 +1,23 @@
+{
+  "name": "binliteserver",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/BinLite/BinLiteServer.git"
+  },
+  "author": "NoahHeber",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/BinLite/BinLiteServer/issues"
+  },
+  "homepage": "https://github.com/BinLite/BinLiteServer#readme",
+  "dependencies": {
+    "express": "^4.17.1",
+    "mysql": "^2.18.1"
+  }
+}
