@@ -1,25 +1,57 @@
-class Server {
+const { WebSocketServer } = require(`ws`),
+    { readFileSync } = require(`fs`),
+    { createServer } = require(`http`);
 
+const http = createServer({ 
+// certs here 
+});
+const wss = new WebSocketServer({ server: http });
 
-  constructor(port) {
+wss.on(`connection`, (ws) => {
+    ws.on(`message`, (data) => {
+        let msg;
 
-    var express = require('express'),
-      app = express();
-    this.app = app;
-    
-    console.log("Registering routes...");
-    var routes = require("./api/routes");
-    routes(app);
+        try {
+            msg = JSON.parse(data);
+        } catch {
+            ws.send(JSON.stringify({ type: "error", data: "Message format must be `{ type: \"...\", data: \"...\" }`" }));
+            return;
+        }
 
-    console.log("Starting listening...");
-    this.server = app.listen(port);
-    console.log('Running server on port: ' + port);
-  }
+        let send = (type, data) => {
+            let obj = { type, data };
+            if (msg.responseId) {
+                obj.responseId = msg.responseId;
+            }
+            ws.send(JSON.stringify(obj));
+        };
 
-  exit() {
-    this.server.close(err => console.log("Error: " + err));
-    console.log("Closed express server.");
-  }
-}
+        if (!msg.type || !msg.data) {
+            send("error", "Message format must be `{ type: \"...\", data: \"...\" }`" );
+            return;
+        }
 
-module.exports = Server;
+        if (!msg.token) {
+            if (msg.type === "auth") {
+                require("./handlers/auth").createSession(ws, msg, send);
+            } else {
+                send("error", "Invalid auth token.");
+                return;
+            }
+        }
+
+        let session = require("./handlers/auth").getSession(msg.token);
+        if (!session) {
+            send("error", "Invalid auth token.");
+            return;
+        }
+
+        try {
+            require("./handlers/" + msg.type)(ws, msg, send);
+        } catch {
+            send("error", "Invalid command type.")
+        }
+    });
+});
+
+http.listen(8080);
