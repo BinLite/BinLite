@@ -1,3 +1,4 @@
+<<<<<<< Updated upstream
 const express = require('express'),
     basicAuth = require('express-basic-auth');
 
@@ -24,3 +25,19 @@ var server = app.listen(8080, function () {
 
     console.log("Example app listening at http://%s:%s", host, port)
 });
+=======
+const express = require("express"),
+  config = require("./config"),
+  app = express(),
+  router = express.Router();
+
+router.use((req, res, next) => {
+  if (req.)
+});
+
+app.use("/api", r);
+
+app.listen(config.port, () => console.log("Listening on " + config.port));
+
+console.log("Hello, world!");
+>>>>>>> Stashed changes
