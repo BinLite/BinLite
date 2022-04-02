@@ -4,8 +4,12 @@ function http(method, theUrl, data = null)
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open(method, theUrl, true); // false for synchronous request
     xmlHttp.onload = (e) => {
-      console.log({ status: xmlHttp.status, request: method + " " + theUrl, res: xmlHttp.responseText });
-      if (xmlHttp.status == 401) { location.href = '/unauthorized.html'; }
+      if (xmlHttp.status == 401) {
+        console.log({ status: xmlHttp.status, request: method + " " + theUrl, response: xmlHttp.responseText });
+        location.href = '/unauthorized.html';
+        return;
+      }
+      console.log({ status: xmlHttp.status, request: method + " " + theUrl, response: JSON.parse(xmlHttp.responseText) });
       resolve(xmlHttp.responseText);
     };
     xmlHttp.onerror = (e) => {

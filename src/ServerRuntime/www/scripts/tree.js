@@ -4,26 +4,16 @@ let allRealms = [];
 let currentRealm = 0;
 let currentRealmItems = [];
 
-function getHiararchy(items) {
-  if (items == null || items == undefined || items.length == 0) { return []; }
-  let h = {};
+window.onload = async () => {
+  // Get realms from API
+  allRealms = await getRealms();
 
-  function add(parent) {
-    parent.children = [];
-    for (let item of items) {
-      if (item.parent == parent?.id) {
-        parent.children.push(item);
-        add(item);
-      }
-    }
+  if (allRealms.length <= 0) {
+    document.getElementById("content").innerHTML = "You do not have access to any realms. Please contact a server admin.";
+    return;
   }
 
-  add(h);
-  return h.children;
-}
-
-window.onload = async () => {
-  allRealms = await getRealms();
+  // Load realms into selector
   var selector = document.getElementById("realmSelector");
   for (var r of allRealms) {
     var opt = document.createElement('option');
@@ -31,30 +21,100 @@ window.onload = async () => {
     opt.innerHTML = r.realm.name;
     selector.appendChild(opt);
   }
-  currentRealm = document.getElementById("realmSelector").value;
+  selector.value = allRealms[0].realm.id;
+  currentRealm = allRealms[0].realm.id;
 
+  //Event subscriptions
   document.getElementById("realmSelector").onchange = realmSelectorChange;
-  realmSelectorChange();
-  document.getElementById("searchBox").oninput = searchChanged;
+  document.getElementById("searchBox").oninput = searchBxChanged;
   document.getElementById("searchBox").focus();
   document.getElementById("addToRealm").onclick = () => addClicked(null);
+  realmSelectorChange();
 };
 
 async function realmSelectorChange() {
+  // Load the items of the selected realm
   var currentRealm = document.getElementById("realmSelector").value;
+  let realm = allRealms.find(r => r.realm.id == currentRealm);
+  let editSpan = document.getElementById("editRealmSpan");
+  if (realm.permission < 3) { editSpan.innerHTML = ""; } else {
+    editSpan.innerHTML = `<button id="editRealm" class="miniBtn btn-edt"></button>`;
+    document.getElementById("editRealm").onclick = editRealmClick;
+  }
+
   currentRealmItems = await getItems(currentRealm);
-  await setupHiararchy(currentRealmItems, false);
+  await setupHierarchy(currentRealmItems, false);
 }
 
-let lastHiararchyItems;
+let lastHierarchyItems;
 
-async function setupHiararchy(items, expanded) {
-  lastHiararchyItems = items;
-  let hair = getHiararchy(items);
-  document.getElementById("hiararchyParent").innerHTML = "";
+// Taking a hierarchy array, load the tree view HTML
+async function setupHierarchy(items, expanded) {
+  // Convert a list of items into a hierarchy
+  function convertListToHierarchy(items) {
+    if (items == null || items == undefined || items.length == 0) { return []; }
+    let h = {};
+
+    function add(parent) {
+      parent.children = [];
+      for (let item of items) {
+        if (item.parent == parent?.id) {
+          parent.children.push(item);
+          add(item);
+        }
+      }
+    }
+
+    add(h);
+    console.log(h.children);
+    return h.children;
+  }
+
+  // Create the HTML for a single item, recursively
+  function hierarchyItem(item, htmlParent, expanded) {
+    let li = document.createElement("li");
+
+    let outerRow = document.createElement("div");
+    outerRow.classList.add("flex");
+    outerRow.classList.add("hover-tree-color");
+    outerRow.classList.add("space-between");
+
+    let rowLeft = document.createElement("div");
+    outerRow.appendChild(rowLeft)
+    let rowRight = document.createElement("div");
+    outerRow.appendChild(rowRight)
+
+    let span = document.createElement("span");
+    span.classList.add(item.children.length > 0 ? "caret" : "emptyCaret");
+    if (expanded ) {span.classList.add("caret-down");}
+    if (item.match) {
+      span.classList.add("match");
+    }
+    span.innerHTML += item.name;
+    rowLeft.appendChild(span);
+
+    addButtons(rowRight, item);
+    li.appendChild(outerRow);
+
+    if (item.children.length > 0) {
+
+      let ul = document.createElement("ul");
+      ul.classList.add("nested");
+      if (expanded) { ul.classList.add("active"); }
+      for (let sub of item.children) {
+        hierarchyItem(sub, ul, expanded);
+      }
+      li.appendChild(ul);
+    }
+    htmlParent.append(li);
+  }
+
+  lastHierarchyItems = items;
+  let hair = convertListToHierarchy(items);
+  document.getElementById("hierarchyParent").innerHTML = "";
 
   for (let item of hair) {
-    hiararchyItem(item, document.getElementById("hiararchyParent"), expanded);
+    hierarchyItem(item, document.getElementById("hierarchyParent"), expanded);
   }
 
   var toggler = document.getElementsByClassName("caret");
@@ -68,47 +128,13 @@ async function setupHiararchy(items, expanded) {
   }
 }
 
-function hiararchyItem(item, htmlParent, expanded) {
-  let li = document.createElement("li");
-
-  let outerRow = document.createElement("div");
-  outerRow.classList.add("flex");
-  outerRow.classList.add("hover-tree-color");
-  outerRow.classList.add("space-between");
-
-  let rowLeft = document.createElement("div");
-  outerRow.appendChild(rowLeft)
-  let rowRight = document.createElement("div");
-  outerRow.appendChild(rowRight)
-
-  let span = document.createElement("span");
-  span.classList.add(item.children.length > 0 ? "caret" : "emptyCaret");
-  if (expanded ) {span.classList.add("caret-down");}
-  if (item.match) {
-    span.classList.add("match");
-  }
-  span.innerHTML += item.name;
-  rowLeft.appendChild(span);
-
-  addButtons(rowRight, item);
-  li.appendChild(outerRow);
-
-  if (item.children.length > 0) {
-
-    let ul = document.createElement("ul");
-    ul.classList.add("nested");
-    if (expanded) { ul.classList.add("active"); }
-    for (let sub of item.children) {
-      hiararchyItem(sub, ul, expanded);
-    }
-    li.appendChild(ul);
-  }
-  htmlParent.append(li);
-}
-
 function addButtons(li, item) {
   let addBtn = document.createElement("button");
-  addBtn.onclick = () => { addClicked(item); };
+  addBtn.onclick = async () => {
+    if (currentRealm == 0) { alert("No valid realm selected."); return; }
+    item = item == null || item == undefined ? null : item.id;
+    location.href = '/editItem.html?parent=' + item + "&mode=create&realm=" + currentRealm;
+   };
   addBtn.classList.add("miniBtn");
   addBtn.classList.add("btn-add");
 /*   addBtn.style.cssFloat = 'right'; */
@@ -118,14 +144,22 @@ function addButtons(li, item) {
 
   if (realm.permission > 1) {
     let editBtn = document.createElement("button");
-    editBtn.onclick = () => { editClicked(item); };
+    editBtn.onclick = async () => {
+      location.href = '/editItem.html?parent=' + item.parent + "&mode=edit&realm=" + currentRealm + "&item=" + item.id;
+    };
     editBtn.classList.add("miniBtn");
     editBtn.classList.add("btn-edt");
 /*     editBtn.style.cssFloat = 'right'; */
     li.appendChild(editBtn);
 
     let subBtn = document.createElement("button");
-    subBtn.onclick = () => { subClicked(item); };
+    subBtn.onclick = async () => {
+      let text = `Are you sure you want to remove '${item.name}'? (${item.id})`;
+      if (confirm(text)) {
+        await deleteItem(item.id);
+        location.href = "/";
+      }
+    };
     subBtn.classList.add("miniBtn");
     subBtn.classList.add("btn-del");
 /*     subBtn.style.cssFloat = 'right'; */
@@ -133,33 +167,13 @@ function addButtons(li, item) {
   }
 }
 
-function addClicked(item) {
-  if (currentRealm == 0) { alert("No valid realm selected."); return; }
-  item = item == null || item == undefined ? null : item.id;
-  location.href = '/editItem.html?parent=' + item + "&mode=create&realm=" + currentRealm;
-}
-
-async function subClicked(item) {
-  //let count = getChildren(currentRealmItems, item).length;
-
-  let text = `Are you sure you want to remove '${item.name}'? (${item.id})`;
-  if (confirm(text)) {
-    await deleteItem(item.id);
-    location.href = "/";
-  }
-}
-
-async function editClicked(item) {
-  location.href = '/editItem.html?parent=' + item.parent + "&mode=edit&realm=" + currentRealm + "&item=" + item.id;
-}
-
-async function searchChanged() {
+async function searchBxChanged() {
   currentRealmItems.forEach(i => i.match = false);
   let term = document.getElementById("searchBox").value.trim();
 
   let items = currentRealmItems;
   if (term.length === 0) {
-    setupHiararchy(items, false);
+    setupHierarchy(items, false);
     return;
   }
 
@@ -182,7 +196,7 @@ async function searchChanged() {
     t.id === value.id
   )));
 
-  setupHiararchy(results2, true);
+  setupHierarchy(results2, true);
 }
 
 async function getParents(items, item) {
@@ -197,34 +211,18 @@ async function getParents(items, item) {
 function getChildren(items, item) {
   let children = items.filter(i => i.parent == item.id);
   if (children.length == 0) { return []; }
-  let allChildren = children.concat(flatten(children.map(c => getChildren(items, c))));
+  let allChildren = children.concat(children.map(c => getChildren(items, c)).flat(1));
   return allChildren;
 }
 
-const flatten = function(arr, result = []) {
-  for (let i = 0, length = arr.length; i < length; i++) {
-    const value = arr[i];
-    if (Array.isArray(value)) {
-      flatten(value, result);
-    } else {
-      result.push(value);
-    }
+function editRealmClick () {
+  if (allRealms.find(r => r.realm.id == currentRealm).permission < 3) {
+    alert("You don't have permission to edit this realm.");
+    return;
   }
-  return result;
-};
-
-document.getElementById("editRealm").onclick = () => {
   location.href = `/editRealm.html?realm=${currentRealm}`;
 };
 
-document.getElementById("historyBtn").onclick = () => {
-  location.href = `/history.html?realm=${currentRealm}`;
-};
-
-document.getElementById("expandAll").onclick = () => {
-  setupHiararchy(lastHiararchyItems, true);
-}
-
-document.getElementById("contractAll").onclick = () => {
-  setupHiararchy(lastHiararchyItems, false);
-}
+document.getElementById("historyBtn").onclick = () => { location.href = `/history.html?realm=${currentRealm}`; };
+document.getElementById("expandAll").onclick = () => { setupHierarchy(lastHierarchyItems, true); }
+document.getElementById("contractAll").onclick = () => { setupHierarchy(lastHierarchyItems, false); }

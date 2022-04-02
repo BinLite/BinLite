@@ -13,11 +13,13 @@
 
 <body>
   <object type="text/html" data="templates/header.html" height="44"></object>
-  <div class="content">
+  <div class="content" id="content">
     <div style="display: flex">
       <p style="display:inline; margin: auto;">Realm&nbsp;&nbsp;</p>
       <select name="realmSelector" id="realmSelector"></select>
-      <button id="editRealm" class="miniBtn btn-edt"></button>
+
+      <span id="editRealmSpan"></span>
+      <!-- <button id="editRealm" class="miniBtn btn-edt"></button> -->
       <button id="historyBtn" class="miniBtn btn-his"></button>
       <input type="text" id="searchBox" name="searchBox" placeholder="Search.." style="flex-grow: 1">
     </div><br>
@@ -26,7 +28,7 @@
     <button id="expandAll" class="miniBtn btn-exp"></button>
     <button id="contractAll" class="miniBtn btn-con"></button>
 
-    <ul id="hiararchyParent" style="padding-inline-start: 20px;"></ul>
+    <ul id="hierarchyParent" style="padding-inline-start: 20px;"></ul>
   </div>
 </body>
 
