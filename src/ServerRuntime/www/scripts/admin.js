@@ -1,4 +1,4 @@
-import { createUser, getUsers, getIds, createRealm, getRealms, getUser, resetPassword } from '/shared/api.js';
+import { createUser, getUsers, getIds, createRealm, getRealms, getUser, resetPassword } from './api.js';
 
 let users = [];
 
@@ -89,7 +89,7 @@ async function loadRealmTable() {
 
     let editBtn = document.createElement("button");
     editBtn.classList.add("miniBtn");
-    editBtn.classList.add("editBtn");
+    editBtn.classList.add("btn-edt");
     editBtn.title = "Edit Realm";
     editBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     editBtn.onclick = () => {
@@ -99,7 +99,7 @@ async function loadRealmTable() {
 
     let deleteBtn = document.createElement("button");
     deleteBtn.classList.add("miniBtn");
-    deleteBtn.classList.add("subBtn");
+    deleteBtn.classList.add("btn-del");
     deleteBtn.title = "Delete Realm";
     deleteBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     deleteBtn.onclick = () => {
@@ -133,10 +133,9 @@ async function loadUserTable() {
 
     let actions = document.createElement("td");
 
-
     let editBtn = document.createElement("button");
     editBtn.classList.add("miniBtn");
-    editBtn.classList.add("resetBtn");
+    editBtn.classList.add("btn-res");
     editBtn.title = "Reset Password";
     editBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     editBtn.onclick = async () => {
@@ -153,7 +152,7 @@ async function loadUserTable() {
 
     let deleteBtn = document.createElement("button");
     deleteBtn.classList.add("miniBtn");
-    deleteBtn.classList.add("editBtn");
+    deleteBtn.classList.add("btn-edt");
     deleteBtn.title = "Edit User";
     deleteBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     deleteBtn.onclick = () => {

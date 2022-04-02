@@ -1,4 +1,4 @@
-import { getItems, getRealms, deleteItem } from '/shared/api.js';
+import { getItems, getRealms, deleteItem } from './api.js';
 
 let allRealms = [];
 let currentRealm = 0;
@@ -107,7 +107,7 @@ function addButtons(li, item) {
   addBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
   addBtn.onclick = () => { addClicked(item); };
   addBtn.classList.add("miniBtn");
-  addBtn.classList.add("addBtn");
+  addBtn.classList.add("btn-add");
 /*   addBtn.style.cssFloat = 'right'; */
   li.appendChild(addBtn);
 
@@ -118,7 +118,7 @@ function addButtons(li, item) {
     editBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     editBtn.onclick = () => { editClicked(item); };
     editBtn.classList.add("miniBtn");
-    editBtn.classList.add("editBtn");
+    editBtn.classList.add("btn-edt");
 /*     editBtn.style.cssFloat = 'right'; */
     li.appendChild(editBtn);
 
@@ -126,7 +126,7 @@ function addButtons(li, item) {
     subBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     subBtn.onclick = () => { subClicked(item); };
     subBtn.classList.add("miniBtn");
-    subBtn.classList.add("subBtn");
+    subBtn.classList.add("btn-del");
 /*     subBtn.style.cssFloat = 'right'; */
     li.appendChild(subBtn);
   }

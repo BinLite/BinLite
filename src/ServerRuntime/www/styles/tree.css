@@ -59,3 +59,7 @@ li {
 .hover-tree-color:hover {
   background-color: #161b21;
 }
+
+.match {
+  color: yellow;
+}

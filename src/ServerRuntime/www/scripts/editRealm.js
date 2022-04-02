@@ -1,4 +1,4 @@
-import { getRealms, getUsers, updateRealm, getPermissions, setPermission } from '/shared/api.js';
+import { getRealms, getUsers, updateRealm, getPermissions, setPermission } from './api.js';
 
 let users = [];
 let editingRealm = {};

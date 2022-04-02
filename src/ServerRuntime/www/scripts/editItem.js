@@ -1,4 +1,4 @@
-import { getItems, createItem, getIds, getRealm, updateItem } from '/shared/api.js';
+import { getItems, createItem, getIds, getRealm, updateItem } from './api.js';
 
 let items = [];
 let parent = {};

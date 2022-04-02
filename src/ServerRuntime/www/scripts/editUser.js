@@ -1,4 +1,4 @@
-import { changePassword, getUsers, getUser, changeEmail } from '/shared/api.js';
+import { changePassword, getUsers, getUser, changeEmail } from './api.js';
 
 let users = [];
 let editingUser;

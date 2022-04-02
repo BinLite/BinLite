@@ -1,4 +1,4 @@
-import { getRealms, getUsers, getUser, getHistory } from '/shared/api.js';
+import { getRealms, getUsers, getUser, getHistory } from './api.js';
 
 let user;
 let users;
