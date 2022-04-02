@@ -46,7 +46,10 @@ async function realmSelectorChange() {
   await setupHiararchy(currentRealmItems, false);
 }
 
+let lastHiararchyItems;
+
 async function setupHiararchy(items, expanded) {
+  lastHiararchyItems = items;
   let hair = getHiararchy(items);
   document.getElementById("hiararchyParent").innerHTML = "";
 
@@ -80,6 +83,7 @@ function hiararchyItem(item, htmlParent, expanded) {
 
   let span = document.createElement("span");
   span.classList.add(item.children.length > 0 ? "caret" : "emptyCaret");
+  if (expanded ) {span.classList.add("caret-down");}
   if (item.match) {
     span.classList.add("match");
   }
@@ -104,7 +108,6 @@ function hiararchyItem(item, htmlParent, expanded) {
 
 function addButtons(li, item) {
   let addBtn = document.createElement("button");
-  addBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
   addBtn.onclick = () => { addClicked(item); };
   addBtn.classList.add("miniBtn");
   addBtn.classList.add("btn-add");
@@ -115,7 +118,6 @@ function addButtons(li, item) {
 
   if (realm.permission > 1) {
     let editBtn = document.createElement("button");
-    editBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     editBtn.onclick = () => { editClicked(item); };
     editBtn.classList.add("miniBtn");
     editBtn.classList.add("btn-edt");
@@ -123,7 +125,6 @@ function addButtons(li, item) {
     li.appendChild(editBtn);
 
     let subBtn = document.createElement("button");
-    subBtn.innerHTML = "&nbsp;&nbsp;&nbsp;&nbsp;";
     subBtn.onclick = () => { subClicked(item); };
     subBtn.classList.add("miniBtn");
     subBtn.classList.add("btn-del");
@@ -219,3 +220,11 @@ document.getElementById("editRealm").onclick = () => {
 document.getElementById("historyBtn").onclick = () => {
   location.href = `/history.html?realm=${currentRealm}`;
 };
+
+document.getElementById("expandAll").onclick = () => {
+  setupHiararchy(lastHiararchyItems, true);
+}
+
+document.getElementById("contractAll").onclick = () => {
+  setupHiararchy(lastHiararchyItems, false);
+}

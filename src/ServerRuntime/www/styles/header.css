@@ -39,14 +39,58 @@ body {
   align-items: center;
   justify-content: center;
 }
+
 .gap {
-  gap: 10px;
+  gap: 1px;
 }
 
-.header a {
-  padding: 10px 0;
+.miniBtn {
+  background-position: center;
+  background-color: transparent;
+  border: none;
+  color: #e5e8eb;
+  font-size: 18px;
+  padding: 8px 8px 8px 8px;
+  border-radius: 4px;
+  cursor: pointer;
+  background-size: 20px;
+  background-repeat: no-repeat;
 }
 
-.header span {
-  padding: 10px 0;
+.miniBtn::before {
+  content: "\00a0\00a0\00a0\00a0";
+}
+
+.btn-log {
+  background-image: url("/img/logout.png");
+}
+
+.btn-pro {
+  background-image: url("/img/profile.png");
+}
+
+.btn-set {
+  background-image: url("/img/settings.png");
+}
+
+.btn-det {
+  background-image: url("/img/details.png");
+}
+
+button {
+
+  border: none;
+  margin: 2px;
+  padding: 6px 12px 6px 12px;
+  background-color: #1f2933;
+  color: #e5e8eb;
+  cursor: pointer;
+
+  transition-property: background-color;
+  transition-duration: 0.2s;
+  transition-delay: 0s;
+}
+
+button:hover {
+  background-color: #31404b;
 }

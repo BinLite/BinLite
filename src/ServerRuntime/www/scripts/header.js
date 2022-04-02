@@ -8,23 +8,29 @@ function logout() {
 }
 
 window.addEventListener("load", async function(event) {
-  if (this.window.parent.location.href.includes("unauthorized")) { return; }
+  if (this.window.parent.location.href.includes("unauthorized.html")) { return; }
+  if (this.window.parent.location.href.includes("api.html")) { return; }
   let user = await getUser();
   if (user && user.serverAdmin) {
-    let admin = this.document.createElement("a");
-    admin.classList.add("headerItem");
-    admin.href = "/admin.html";
-    admin.innerText = "Server Admin";
+    let admin = this.document.createElement("button");
+    admin.classList.add("miniBtn");
+    admin.classList.add("btn-set");
 
-    this.document.getElementById("serverAdminSpan").appendChild(admin);
+    this.document.getElementById("adminA").appendChild(admin);
   }
   if (user) {
-    let logout = this.document.createElement("a");
-    logout.classList.add("headerItem");
-    logout.href = "";
-    logout.innerHTML = "Logout";
-    logout.onclick = logout;
+    let log = this.document.createElement("button");
+    log.classList.add("miniBtn");
+    log.classList.add("btn-log");
+    log.onclick = logout;
 
-    this.document.getElementById("logoutSpan").appendChild(logout);
+    this.document.getElementById("logoutSpan").appendChild(log);
+
+
+    let pro = this.document.createElement("button");
+    pro.classList.add("miniBtn");
+    pro.classList.add("btn-pro");
+
+    this.document.getElementById("userA").appendChild(pro);
   }
 },false);

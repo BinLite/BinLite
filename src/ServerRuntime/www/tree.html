@@ -15,16 +15,18 @@
   <object type="text/html" data="templates/header.html" height="44"></object>
   <div class="content">
     <div style="display: flex">
-      <p style="display:inline; margin-top: 0; margin-bottom:0; margin-right: 10px;">Realm: </p>
+      <p style="display:inline; margin: auto;">Realm&nbsp;&nbsp;</p>
       <select name="realmSelector" id="realmSelector"></select>
-      <button id="editRealm" class="miniBtn btn-edt" style="margin-left: 15px">&nbsp;</button>
-      <button id="historyBtn" class="miniBtn btn-his" style="margin-left: 15px">&nbsp;</button>
-      <input type="text" id="searchBox" name="searchBox" placeholder="Search.."
-        style="flex-grow: 1; margin-right: 20px; margin-left: 20px;">
+      <button id="editRealm" class="miniBtn btn-edt"></button>
+      <button id="historyBtn" class="miniBtn btn-his"></button>
+      <input type="text" id="searchBox" name="searchBox" placeholder="Search.." style="flex-grow: 1">
     </div><br>
-    &nbsp;&nbsp;&nbsp;<button id="addToRealm" class="miniBtn btn-add">&nbsp;</button>
+    &nbsp;&nbsp;&nbsp;
+    <button id="addToRealm" class="miniBtn btn-add"></button>
+    <button id="expandAll" class="miniBtn btn-exp"></button>
+    <button id="contractAll" class="miniBtn btn-con"></button>
 
-    <ul id="hiararchyParent"></ul>
+    <ul id="hiararchyParent" style="padding-inline-start: 20px;"></ul>
   </div>
 </body>
 

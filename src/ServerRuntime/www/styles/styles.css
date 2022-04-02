@@ -44,10 +44,15 @@ body {
   border: none;
   color: #e5e8eb;
   font-size: 18px;
-  padding: 2px 8px 2px 8px;
+  padding: 8px 8px 8px 8px;
+  border-radius: 4px;
   cursor: pointer;
   background-size: 20px;
   background-repeat: no-repeat;
+}
+
+.miniBtn::before {
+  content: "\00a0\00a0\00a0\00a0";
 }
 
 .btn-add {
@@ -74,8 +79,16 @@ body {
   background-image: url("/img/history.png");
 }
 
+.btn-exp {
+  background-image: url("/img/expand.png");
+}
+
+.btn-con {
+  background-image: url("/img/contract.png");
+}
+
 input[type=text], select {
-  min-width: 20%;
+  min-width: 15%;
   padding: 3px 5px;
   display: inline-block;
   border: 0px solid #ccc;
@@ -85,11 +98,12 @@ input[type=text], select {
   color: #e5e8eb;
 }
 
-input[type=text]:disabled, select:disabled, input[type=text]:read-only, select:read-only {
+input[type=text]:disabled, select:disabled, input[type=text]:read-only  {
   background-color: #15161c;
 }
 
 button {
+
   border: none;
   margin: 2px;
   padding: 6px 12px 6px 12px;
@@ -103,7 +117,7 @@ button {
 }
 
 button:hover {
-  background-color: #15161c;
+  background-color: #1f2933;
 }
 
 
@@ -117,4 +131,11 @@ object {
 
 .space-between {
   justify-content: space-between;
+}
+
+textarea {
+  background-color: #1f2933;
+  color: #e5e8eb;
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
 }

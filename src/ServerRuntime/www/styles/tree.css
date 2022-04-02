@@ -1,6 +1,5 @@
 ul, #myUL {
   list-style-type: none;
-  padding-top: 5px;
 }
 
 #myUL {
@@ -14,6 +13,7 @@ ul, #myUL {
   -moz-user-select: none; /* Firefox 2+ */
   -ms-user-select: none; /* IE 10+ */
   user-select: none;
+  margin: auto auto;
 }
 
 .caret::before {
@@ -45,15 +45,11 @@ ul, #myUL {
   display: block;
 }
 
-li {
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
 .hover-tree-color {
   transition-property: all;
   transition-duration: 0.2s;
-  border-radius: 2px;
+  border-radius: 4px;
+  padding-left: 10px;
 }
 
 .hover-tree-color:hover {
@@ -62,4 +58,18 @@ li {
 
 .match {
   color: yellow;
+}
+
+.emptyCaret {
+  margin: auto auto;
+}
+
+.flex div {
+  display:table;
+}
+
+div span {
+  display: table-cell;
+  vertical-align: middle;
+  text-align: left;
 }
