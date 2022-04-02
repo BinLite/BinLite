@@ -8,6 +8,7 @@ function logout() {
 }
 
 window.addEventListener("load", async function(event) {
+  if (this.window.parent.location.href.includes("unauthorized")) { return; }
   let user = await getUser();
   if (user && user.serverAdmin) {
     let admin = this.document.createElement("a");
