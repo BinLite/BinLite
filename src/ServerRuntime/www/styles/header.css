@@ -1,0 +1,52 @@
+.header {
+  background-color: #161b21;
+  margin: none;
+  flex: 0 1 auto;
+}
+
+.headerItem {
+  font-size: 1em;
+  color: #e5e8eb;
+  text-decoration: none;
+  padding-right: 5px;
+  text-align: center;
+}
+
+body {
+  margin: 0px;
+  color: #e5e8eb;
+  font-family: Verdana, sans-serif;
+  font-size: 16px;
+  text-align: center;
+}
+
+.flex {
+  display: flex;
+}
+
+.flexGrowOne {
+  flex-grow: 1;
+}
+
+.space-between {
+  justify-content: space-between;
+}
+
+.stretch {
+  align-items: stretch;
+}
+.center {
+  align-items: center;
+  justify-content: center;
+}
+.gap {
+  gap: 10px;
+}
+
+.header a {
+  padding: 10px 0;
+}
+
+.header span {
+  padding: 10px 0;
+}
