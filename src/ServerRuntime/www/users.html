@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <script src="/shared/main.js" type="module"></script>
+  <script src="/shared/editUser.js" type="module"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.png">
+  <title>BinLite</title>
+</head>
+
+<body>
+  <div class="header flex space-between stretch">
+    <div class="flex gap">
+      <a class="flex center" href="/">
+        <img src="/img/banner.png" height="24">
+      </a>
+      <a class="headerItem" href="/users.html">User</a>
+      <span id="serverAdminDiv"></span>
+      <a class="headerItem" href="/api.html">API Docs</a>
+    </div>
+    <div class="flex">
+      <a class="headerItem" href="" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+  <div class="content">
+    <p class="title" id="title">User Settings</p>
+    <p style="display: inline">ID: </p>
+    <p style="display: inline" id="idP"></p><br><br>
+    <p style="display: inline">Username: &nbsp;</p>
+    <p style="display: inline" id="usernameP"></p><br><br>
+    <p style="display: inline">Email: </p>
+    <p style="display: inline" id="emailP"></p><br><br>
+    <button id="changeEmail">Change Email</button>
+    <button id="changePassword">Change Password</button>
+  </div>
+</body>
+
+</html>

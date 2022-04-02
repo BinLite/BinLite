@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "BinLiteServer": {
+      "commandName": "Project",
+      "commandLineArgs": "\"..\\..\\..\\..\\..\\ServerRuntime\""
+    }
+  }
+}

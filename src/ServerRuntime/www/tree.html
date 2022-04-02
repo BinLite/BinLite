@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <script src="/shared/main.js" type="module"></script>
+  <script src="/shared/tree.js" type="module"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="stylesheet" href="/shared/tree.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.png">
+  <title>BinLite</title>
+</head>
+
+<body>
+  <div class="header flex space-between stretch">
+    <div class="flex gap">
+      <a class="flex center" href="/">
+        <img src="/img/banner.png" height="24">
+      </a>
+      <a class="headerItem" href="/users.html">User</a>
+      <span id="serverAdminDiv"></span>
+      <a class="headerItem" href="/api.html">API Docs</a>
+    </div>
+    <div class="flex">
+      <a class="headerItem" href="" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+  <div class="content">
+    <div style="display: flex">
+      <p style="display:inline; margin-top: 0; margin-bottom:0; margin-right: 10px;">Realm: </p>
+      <select name="realmSelector" id="realmSelector"></select>
+      <button id="editRealm" class="miniBtn editBtn" style="margin-left: 15px">&nbsp;</button>
+      <button id="historyBtn" class="miniBtn historyBtn" style="margin-left: 15px">&nbsp;</button>
+      <input type="text" id="searchBox" name="searchBox" placeholder="Search.."
+        style="flex-grow: 1; margin-right: 20px; margin-left: 20px;">
+    </div><br>
+    &nbsp;&nbsp;&nbsp;<button id="addToRealm" class="miniBtn addBtn">&nbsp;</button>
+
+    <ul id="hiararchyParent"></ul>
+  </div>
+</body>
+
+</html>

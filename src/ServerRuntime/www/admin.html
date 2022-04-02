@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <script src="/shared/main.js" type="module"></script>
+  <script src="/shared/admin.js" type="module"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.png">
+  <title>BinLite</title>
+</head>
+
+<body>
+  <div class="header flex space-between stretch">
+    <div class="flex gap">
+      <a class="flex center" href="/">
+        <img src="/img/banner.png" height="24">
+      </a>
+      <a class="headerItem" href="/users.html">User</a>
+      <span id="serverAdminDiv"></span>
+      <a class="headerItem" href="/api.html">API Docs</a>
+    </div>
+    <div class="flex">
+      <a class="headerItem" href="" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+  <div class="content">
+
+    <div class="tableOuter">
+      <p class="title">Realms</p>
+      <table id="realmTable">
+        <tr>
+          <th>ID</th>
+          <th>Name</th>
+          <th>Owner</th>
+          <th>Actions</th>
+        </tr>
+      </table>
+    </div>
+
+    <p class="title">Create Realm</p>
+    <p style="display: inline">Name: </p>
+    <input type="text" value="New Realm" id="realmNameBx" /><br><br>
+    <p style="display: inline">ID: </p>
+    <input type="text" value="" id="realmIdBx" /><br><br>
+    <p style="display:inline">Owner: </p>
+    <select name="ownerSelector" id="ownerSelector"></select><br><br>
+    <button id="createRealmBtn">Submit</button>
+
+    <br><br><br><br>
+
+    <div class="tableOuter">
+      <p class="title">Users</p>
+      <table id="userTable">
+        <tr>
+          <th>ID</th>
+          <th>Username</th>
+          <th>Email</th>
+          <th>Actions</th>
+        </tr>
+      </table>
+    </div>
+
+    <p class="title">Create User</p>
+    <p style="display: inline">Username: </p>
+    <input type="text" value="New User" id="usernameBx" /><br><br>
+    <p style="display: inline">Email: </p>
+    <input type="text" value="" id="emailBx" /><br><br>
+    <button id="createUserBtn">Submit</button>
+  </div>
+</body>
+
+</html>

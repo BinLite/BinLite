@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta name="viewport" content="width=1280, initial-scale=1">
+  <script src="/shared/main.js" type="module"></script>
+  <script src="/shared/editItem.js" type="module"></script>
+  <link rel="stylesheet" href="/styles.css">
+  <link rel="icon" type="image/x-icon" href="/favicon.png">
+  <title>BinLite</title>
+</head>
+
+<body>
+  <div class="header flex space-between stretch">
+    <div class="flex gap">
+      <a class="flex center" href="/">
+        <img src="/img/banner.png" height="24">
+      </a>
+      <a class="headerItem" href="/users.html">User</a>
+      <span id="serverAdminDiv"></span>
+      <a class="headerItem" href="/api.html">API Docs</a>
+    </div>
+    <div class="flex">
+      <a class="headerItem" href="" id="logoutBtn">Logout</a>
+    </div>
+  </div>
+  <div class="content">
+    <p class="title" id="title">Create Item</p>
+    <p style="display: inline">Location: &nbsp;</p>
+    <p style="display: inline" id="parentP"></p><br><br>
+    <p style="display: inline">Name: </p>
+    <input type="text" value="New Item" id="nameBx" /><br><br>
+    <p style="display: inline">ID: </p>
+    <input type="text" value="" id="idBx" /><br><br>
+    <p style="display: inline">Description: </p><br>
+    <textarea id="descriptionBx" style="width: 100%; height: 100px"></textarea><br><br>
+    <button id="cancelBtn">Cancel</button>
+    <button style="float: right" id="createBtn">Create</button>
+  </div>
+</body>
+
+</html>
