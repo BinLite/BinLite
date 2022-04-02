@@ -7,26 +7,23 @@ function logout() {
   window.location.replace("/");
 }
 
-function createHeader() {
-  console.log("Loading header...");
-  console.log("Header loaded.");
-}
-
 window.addEventListener("load", async function(event) {
-  createHeader();
-
   let user = await getUser();
   if (user && user.serverAdmin) {
-    let a = this.document.createElement("a");
-    a.classList.add("headerItem");
-    a.href = "/admin.html";
-    a.innerText = "Server Admin";
+    let admin = this.document.createElement("a");
+    admin.classList.add("headerItem");
+    admin.href = "/admin.html";
+    admin.innerText = "Server Admin";
 
-    let parent = this.document.getElementById("serverAdminDiv");
-    parent.appendChild(a);
+    this.document.getElementById("serverAdminSpan").appendChild(admin);
   }
   if (user) {
+    let logout = this.document.createElement("a");
+    logout.classList.add("headerItem");
+    logout.href = "";
+    logout.innerHTML = "Logout";
+    logout.onclick = logout;
 
-    this.document.getElementById("logoutBtn").onclick = logout;
+    this.document.getElementById("logoutSpan").appendChild(logout);
   }
 },false);
