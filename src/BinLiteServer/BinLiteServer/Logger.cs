@@ -18,11 +18,9 @@ namespace BinLiteServer
             ("ERROR", ConsoleColor.Red, DiscordColor.Red),
             ("FATAL", ConsoleColor.DarkRed, DiscordColor.DarkRed),
         };
-        //private static string DiscordToken;
 
         private static int consoleLevel;
         private static int fileLevel;
-        //private static int discordLevel;
 
         public static DiscordChannel DiscordLogChannel { get; set; }
 
@@ -37,10 +35,6 @@ namespace BinLiteServer
                 .First(c => c.l.Item1 == Configuration.Get<string>("logLevel.console")).index;
             fileLevel = levels.Select((l, index) => (l, index))
                 .First(c => c.l.Item1 == Configuration.Get<string>("logLevel.file")).index;
-            //discordLevel = levels.Select((l, index) => (l, index))
-            //    .First(c => c.l.Item1 == Configuration.Get<string>("logLevel.discord")).index;
-
-            //DiscordToken = Configuration.Get<string>("discord.token");
             var baseLogs = Configuration.Get<string>("logPath");
 
             if (!Directory.Exists(baseLogs))
@@ -96,11 +90,6 @@ namespace BinLiteServer
                     {
                         Log_File(type, content, file, line, time);
                     }
-
-                    //if (level >= discordLevel)
-                    //{
-                    //    Log_Discord(type, content, file, line, time);
-                    //}
                     IsLogging = false;
                 }
             }
@@ -131,23 +120,6 @@ namespace BinLiteServer
             var message = $"{time:yyyy-MM-dd HH:mm:ss} {type} {file}:{line} - {content}\n";
             File.AppendAllText(currentFile, message);
         }
-
-        //private static void Log_Discord(string type, object content, string file, int line, DateTime time)
-        //{
-            //if (DiscordManager.Client is null || DiscordLogChannel is null) { return; }
-
-            //var con = content.ToString()!.Replace(DiscordToken, "TOILETBOWL??");
-
-            //var color = levels.First(l => l.Item1 == type).Item3;
-
-            //DiscordLogChannel.SendMessageAsync(new DiscordEmbedBuilder()
-            //    .WithColor(color)
-            //    .WithTitle(type)
-            //    .WithDescription(con)
-            //    .AddField("File", file + ":" + line)
-            //    .WithTimestamp(time)
-            //    .Build());
-        //}
 
         public static void Trace(object content) => Log(levels[0].Item1, content);
         public static void Debug(object content) => Log(levels[1].Item1, content);

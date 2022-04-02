@@ -66,7 +66,6 @@ namespace BinLiteServer
 
         public static int Execute(string sql, params object?[] parameters)
         {
-            Logger.Debug(sql);
             sql = sql.Replace("@p0", TablePrefix);
             using var conn = Run(sql);
             var i = 0;
@@ -74,7 +73,6 @@ namespace BinLiteServer
             {
                 i++;
                 conn.Parameters.AddWithValue("@p" + i, p);
-                Logger.Debug($"@p{i} : {p}");
             }
              var rows = conn.ExecuteNonQuery();
             HandleEnd(conn);
@@ -83,7 +81,6 @@ namespace BinLiteServer
 
         public static List<Dictionary<string, object>> Read(string sql, params object[] parameters)
         {
-            Logger.Debug(sql);
             sql = sql.Replace("@p0", TablePrefix);
             sql = sql.EndsWith(";") ? sql : sql + ";";
             using var conn = Run(sql);
@@ -92,7 +89,6 @@ namespace BinLiteServer
             {
                 i++;
                 conn.Parameters.AddWithValue("@p" + i, p);
-                Logger.Debug($"@p{i} : {p}");
             }
             var reader = conn.ExecuteReader();
             var toReturn = new List<Dictionary<string, object>>();
