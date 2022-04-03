@@ -1,4 +1,5 @@
-ul, #myUL {
+ul,
+#myUL {
   list-style-type: none;
 }
 
@@ -9,9 +10,12 @@ ul, #myUL {
 
 .caret {
   cursor: pointer;
-  -webkit-user-select: none; /* Safari 3.1+ */
-  -moz-user-select: none; /* Firefox 2+ */
-  -ms-user-select: none; /* IE 10+ */
+  -webkit-user-select: none;
+  /* Safari 3.1+ */
+  -moz-user-select: none;
+  /* Firefox 2+ */
+  -ms-user-select: none;
+  /* IE 10+ */
   user-select: none;
   margin: auto auto;
 }
@@ -31,8 +35,10 @@ ul, #myUL {
 }
 
 .caret-down::before {
-  -ms-transform: rotate(90deg); /* IE 9 */
-  -webkit-transform: rotate(90deg); /* Safari */
+  -ms-transform: rotate(90deg);
+  /* IE 9 */
+  -webkit-transform: rotate(90deg);
+  /* Safari */
   transform: rotate(90deg);
 }
 
@@ -65,11 +71,38 @@ ul, #myUL {
 }
 
 .flex div {
-  display:table;
+  display: table;
 }
 
 div span {
   display: table-cell;
   vertical-align: middle;
   text-align: left;
+}
+
+.tree-footer {
+  height: 44px;
+  position: fixed;
+  bottom: 0%;
+  left: 0%;
+  width: 100%;
+}
+
+.tree-footer div {
+  height: 100%;
+  margin: auto;
+  background-color: #1f2933;
+  padding: 10px;
+}
+
+@media (min-aspect-ratio: 12/9) {
+  .tree-footer div {
+    width: 50%;
+  }
+}
+
+@media (max-aspect-ratio: 12/9) {
+  .tree-footer div {
+    width: 100%;
+  }
 }

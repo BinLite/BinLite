@@ -31,17 +31,9 @@ async function getItem(id) {
   return JSON.parse(await http("GET", `/api/item?id=${encodeURIComponent(id)}`));
 }
 
-async function deleteItem(id) {
-  return JSON.parse(await http("DELETE", `/api/item?id=${encodeURIComponent(id)}`));
-}
-
-async function createItem(item) {
-  return JSON.parse(await http("POST", "/api/item", item));
-}
-
-async function updateItem(item) {
-  return JSON.parse(await http("PUT", "/api/item", item));
-}
+const deleteItem = async (id) => JSON.parse(await http("DELETE", `/api/item?id=${encodeURIComponent(id)}`));
+const createItem = async (item) => JSON.parse(await http("POST", "/api/item", item));
+const updateItem = async (item) => JSON.parse(await http("PUT", "/api/item", item));
 
 //
 

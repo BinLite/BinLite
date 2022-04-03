@@ -32,6 +32,12 @@ window.onload = async () => {
   realmSelectorChange();
 };
 
+function addClicked(item) {
+  if (currentRealm == 0) { alert("No valid realm selected."); return; }
+  item = item == null || item == undefined ? null : item.id;
+  location.href = '/editItem.html?parent=' + item + "&mode=create&realm=" + currentRealm;
+}
+
 async function realmSelectorChange() {
   // Load the items of the selected realm
   var currentRealm = document.getElementById("realmSelector").value;
@@ -130,11 +136,7 @@ async function setupHierarchy(items, expanded) {
 
 function addButtons(li, item) {
   let addBtn = document.createElement("button");
-  addBtn.onclick = async () => {
-    if (currentRealm == 0) { alert("No valid realm selected."); return; }
-    item = item == null || item == undefined ? null : item.id;
-    location.href = '/editItem.html?parent=' + item + "&mode=create&realm=" + currentRealm;
-   };
+  addBtn.onclick = () => { addClicked(item) };
   addBtn.classList.add("miniBtn");
   addBtn.classList.add("btn-add");
 /*   addBtn.style.cssFloat = 'right'; */
