@@ -11,5 +11,7 @@ namespace BinLiteServer
         public string Owner { get; set; }
         [JsonProperty("name")]
         public string Name { get; set; }
+        [JsonProperty("enabled")]
+        public bool Enabled { get; set; }
     }
 }

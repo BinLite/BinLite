@@ -1,8 +1,12 @@
-import { getItems, getRealms, deleteItem } from './api.js';
+import { getItems, getRealms, deleteItem, updateItem } from './api.js';
 
 let allRealms = [];
 let currentRealm = 0;
 let currentRealmItems = [];
+
+let selected = [];
+
+let moving = false;
 
 window.onload = async () => {
   // Get realms from API
@@ -28,9 +32,72 @@ window.onload = async () => {
   document.getElementById("realmSelector").onchange = realmSelectorChange;
   document.getElementById("searchBox").oninput = searchBxChanged;
   document.getElementById("searchBox").focus();
-  document.getElementById("addToRealm").onclick = () => addClicked(null);
+/*   document.getElementById("addToRealm").onclick = () => addClicked(null); */
   realmSelectorChange();
 };
+
+function loadItemEditorSpan() {
+  let realm = allRealms.find(r => r.realm.id == currentRealm);
+  let span = document.getElementById("itemEditorSpan");
+  span.innerHTML = "";
+  if (realm.permission < 2) {
+    return;
+  }
+
+  let addBtn = document.createElement("button");
+  addBtn.onclick = () => { addClicked(null) };
+  addBtn.classList.add("miniBtn");
+  addBtn.classList.add("btn-add");
+  addBtn.setAttribute("title", "Add Top-Level Item");
+  span.appendChild(addBtn);
+
+  if (selected.length == 0) { return; }
+  addBtn.style.marginRight = "15px";
+
+  if (moving) {
+    span.innerHTML += `Moving ${selected.length} items`;
+    let canBtn = document.createElement("button");
+    canBtn.onclick = async () => {
+      console.log("Cancel clicked");
+      moving = false;
+      setupHierarchy(lastHierarchyItems, false);
+      loadItemEditorSpan();
+    };
+    canBtn.classList.add("miniBtn");
+    canBtn.classList.add("btn-can");
+    canBtn.setAttribute("title", "Cancel");
+    span.appendChild(canBtn);
+    return;
+  }
+
+  span.innerHTML += `${selected.length} selected`;
+
+  let subBtn = document.createElement("button");
+  subBtn.onclick = async () => {
+    let text = `Are you sure you want to remove ${selected.length} items?`;
+    if (confirm(text)) {
+      for (let selectedItem of selected) {
+        await deleteItem(selectedItem);
+      }
+      location.reload();
+    }
+  };
+  subBtn.classList.add("miniBtn");
+  subBtn.classList.add("btn-del");
+  subBtn.setAttribute("title", "Deleted Selected");
+  span.appendChild(subBtn);
+
+  let movBtn = document.createElement("button");
+  movBtn.onclick = async () => {
+    moving = true;
+    setupHierarchy(lastHierarchyItems, false);
+    loadItemEditorSpan();
+  };
+  movBtn.classList.add("miniBtn");
+  movBtn.classList.add("btn-mov");
+  movBtn.setAttribute("title", "Move Selected");
+  span.appendChild(movBtn);
+}
 
 function addClicked(item) {
   if (currentRealm == 0) { alert("No valid realm selected."); return; }
@@ -40,16 +107,17 @@ function addClicked(item) {
 
 async function realmSelectorChange() {
   // Load the items of the selected realm
-  var currentRealm = document.getElementById("realmSelector").value;
+  currentRealm = document.getElementById("realmSelector").value;
   let realm = allRealms.find(r => r.realm.id == currentRealm);
   let editSpan = document.getElementById("editRealmSpan");
   if (realm.permission < 3) { editSpan.innerHTML = ""; } else {
-    editSpan.innerHTML = `<button id="editRealm" class="miniBtn btn-edt"></button>`;
+    editSpan.innerHTML = `<button id="editRealm" class="miniBtn btn-edt" title="Edit Realm"></button>`;
     document.getElementById("editRealm").onclick = editRealmClick;
   }
 
   currentRealmItems = await getItems(currentRealm);
   await setupHierarchy(currentRealmItems, false);
+  loadItemEditorSpan();
 }
 
 let lastHierarchyItems;
@@ -72,7 +140,6 @@ async function setupHierarchy(items, expanded) {
     }
 
     add(h);
-    console.log(h.children);
     return h.children;
   }
 
@@ -135,38 +202,69 @@ async function setupHierarchy(items, expanded) {
 }
 
 function addButtons(li, item) {
+  let realm = allRealms.find(r => r.realm.id == currentRealm);
+  if (realm.permission <= 1) { return; }
+
+  if (moving) {
+    let toMove = currentRealmItems.filter(i => selected.find(s => s == i.id));
+
+    let canMove = !selected.find(s => s == item.id);
+    for (var s of toMove) {
+      if (getChildren(currentRealmItems, s).find(i => i.id == item.id)) {
+        canMove = false;
+        break;
+      }
+    }
+
+    let movBtn = document.createElement("button");
+    if (canMove) {
+      movBtn.onclick = async () => {
+        for (let i of toMove) {
+          i.parent = item.id;
+          await updateItem(i);
+        }
+        alert(`${selected.length} items moved.`);
+        location.reload();
+      };
+    } else {
+      movBtn.classList.add("greyscale");
+    }
+    movBtn.classList.add("miniBtn");
+    movBtn.classList.add("btn-mov");
+    movBtn.setAttribute("title", "Move Selected");
+    li.appendChild(movBtn);
+
+    return;
+  }
+
   let addBtn = document.createElement("button");
   addBtn.onclick = () => { addClicked(item) };
   addBtn.classList.add("miniBtn");
   addBtn.classList.add("btn-add");
-/*   addBtn.style.cssFloat = 'right'; */
   li.appendChild(addBtn);
 
-  let realm = allRealms.find(r => r.realm.id == currentRealm);
+  let editBtn = document.createElement("button");
+  editBtn.onclick = async () => {
+    location.href = '/editItem.html?parent=' + item.parent + "&mode=edit&realm=" + currentRealm + "&item=" + item.id;
+  };
+  editBtn.classList.add("miniBtn");
+  editBtn.classList.add("btn-edt");
+  li.appendChild(editBtn);
 
-  if (realm.permission > 1) {
-    let editBtn = document.createElement("button");
-    editBtn.onclick = async () => {
-      location.href = '/editItem.html?parent=' + item.parent + "&mode=edit&realm=" + currentRealm + "&item=" + item.id;
-    };
-    editBtn.classList.add("miniBtn");
-    editBtn.classList.add("btn-edt");
-/*     editBtn.style.cssFloat = 'right'; */
-    li.appendChild(editBtn);
+  let checked = document.createElement("input");
+  checked.setAttribute("type", "checkbox");
+  checked.onclick = async () => {
+    if (checked.checked) {
+      selected.push(item.id);
+    } else {
+      selected = selected.filter(s => s != item.id);
+    }
 
-    let subBtn = document.createElement("button");
-    subBtn.onclick = async () => {
-      let text = `Are you sure you want to remove '${item.name}'? (${item.id})`;
-      if (confirm(text)) {
-        await deleteItem(item.id);
-        location.href = "/";
-      }
-    };
-    subBtn.classList.add("miniBtn");
-    subBtn.classList.add("btn-del");
-/*     subBtn.style.cssFloat = 'right'; */
-    li.appendChild(subBtn);
-  }
+    loadItemEditorSpan();
+  };
+  checked.checked = selected.find(s => s == item.id);
+  checked.classList.add("miniBtn");
+  li.appendChild(checked);
 }
 
 async function searchBxChanged() {

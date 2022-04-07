@@ -12,6 +12,7 @@ namespace BinLiteServer
   `id` varchar(24) NOT NULL,
   `owner` varchar(24) DEFAULT NULL,
   `name` varchar(128) DEFAULT NULL,
+  `enabled` bit(1) NOT NULL,
   PRIMARY KEY (`id`),
   UNIQUE KEY `id_UNIQUE` (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
@@ -30,7 +31,7 @@ namespace BinLiteServer
             var serverAdmin = Connector_User.GetById(caller).ServerAdmin;
 
             var r = MySqlManager.Read("SELECT * FROM @p0realms rm LEFT JOIN @p0realm_user ru ON (ru.realm=rm.id AND ru.user=@p1)" +
-                "WHERE rm.owner=@p1 OR ru.permission>0 OR @p2;", caller, serverAdmin);
+                "WHERE (rm.owner=@p1 OR ru.permission>0 OR @p2) AND (rm.enabled=TRUE OR @p2);", caller, serverAdmin);
             return r.Select(d =>
             {
                 return new RealmPermission()
@@ -40,6 +41,7 @@ namespace BinLiteServer
                         ID = d["id"].ToString()!,
                         Owner = d["owner"].ToString()!,
                         Name = d["name"].ToString()!,
+                        Enabled = d["enabled"].ToString()! == "1",
                     },
                     Permissions = serverAdmin || (d["owner"].ToString()! == caller) ? Permissions.Admin : (Permissions)int.Parse(d["permission"].ToString()!)
                 };
@@ -48,13 +50,17 @@ namespace BinLiteServer
 
         public static Realm GetByID(string id, string caller)
         {
-            var r = MySqlManager.Read("SELECT * FROM @p0realms WHERE id=@p1", id);
+            var serverAdmin = Connector_User.GetById(caller).ServerAdmin;
+
+            var r = MySqlManager.Read("SELECT rm.* FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
+                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0);", caller, serverAdmin);
             if (r.Count == 0) { return null!; }
             return new Realm()
             {
                 ID = r[0]["id"].ToString()!,
                 Owner = r[0]["owner"].ToString()!,
                 Name = r[0]["name"].ToString()!,
+                Enabled = r[0]["enabled"].ToString()! == "1",
             };
         }
 
@@ -65,7 +71,7 @@ namespace BinLiteServer
             var exists = MySqlManager.Read("SELECT COUNT(*) AS COUNT FROM @p0realms WHERE id=@p1;", r.ID)[0]["COUNT"].ToString() != "0";
             if (exists) { return null!; }
 
-            MySqlManager.Execute("INSERT INTO @p0realms VALUES (@p1, @p2, @p3);", r.ID, r.Owner, r.Name);
+            MySqlManager.Execute("INSERT INTO @p0realms VALUES (@p1, @p2, @p3, @p4);", r.ID, r.Owner, r.Name, r.Enabled);
 
             var owner = Connector_User.GetAll().First(u => u.ID == r.Owner);
             EmailManager.Send(owner.Email, "Realm Created", $"Hello, {owner.Username}.\n " +
@@ -89,17 +95,18 @@ namespace BinLiteServer
                 MySqlManager.Execute("INSERT INTO @p0realm_user VALUES (@p1, @p2, 3)", realm.ID, old.Owner);
             }
 
-            var count = MySqlManager.Execute("UPDATE @p0realms SET name=@p1,owner=@p2 WHERE id=@p3",
-                realm.Name, realm.Owner, realm.ID);
+            var count = MySqlManager.Execute("UPDATE @p0realms SET name=@p1,owner=@p2,enabled=@p3 WHERE id=@p4",
+                realm.Name, realm.Owner, realm.Enabled, realm.ID);
             return count > 0 ? GetByID(realm.ID, caller) : null!;
         }
 
         public static Permissions GetPermission(string user, string realm)
         {
             if (Connector_User.GetById(user).ServerAdmin) { return Permissions.Admin; }
-            var r = MySqlManager.Read("SELECT * FROM @p0realms WHERE owner=@p1 AND id=@p2", user, realm);
+            var r = MySqlManager.Read("SELECT * FROM @p0realms WHERE owner=@p1 AND id=@p2 AND enabled=TRUE", user, realm);
             if (r.Count > 0) { return Permissions.Admin; }
-            r = MySqlManager.Read("SELECT permission FROM @p0realm_user WHERE realm=@p1 AND user=@p2;", realm, user);
+            r = MySqlManager.Read("SELECT permission FROM @p0realm_user ru INNER JOIN @p0realms rm ON rm.id=ru.realm " +
+                "WHERE ru.realm=@p1 AND ru.user=@p2 AND rm.enabled=TRUE;", realm, user);
             if (r.Count <= 0) { return Permissions.None; }
             return (Permissions)int.Parse(r[0]["permission"].ToString()!);
         }

@@ -9,6 +9,9 @@
   <script src="/scripts/tree.js" type="module"></script>
   <link rel="icon" type="image/x-icon" href="/favicon.png">
   <title>BinLite</title>
+  <!--   <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
+  <script src="vue/tree-vue.js"></script>
+  <script src="vue/hierarchy-item.js"></script> -->
 </head>
 
 <body>
@@ -19,22 +22,22 @@
       <select name="realmSelector" id="realmSelector"></select>
 
       <span id="editRealmSpan"></span>
-      <!-- <button id="editRealm" class="miniBtn btn-edt"></button> -->
-      <button id="historyBtn" class="miniBtn btn-his"></button>
+      <button id="historyBtn" class="miniBtn btn-his" title="Realm History"></button>
       <input type="text" id="searchBox" name="searchBox" placeholder="Search.." style="flex-grow: 1">
     </div><br>
     &nbsp;&nbsp;&nbsp;
-    <button id="addToRealm" class="miniBtn btn-add"></button>
-    <button id="expandAll" class="miniBtn btn-exp"></button>
-    <button id="contractAll" class="miniBtn btn-con"></button>
-
-    <ul id="hierarchyParent" style="padding-inline-start: 20px;"></ul>
-
-    <div class="tree-footer">
+    <div class="flex space-between hover-tree-color">
       <div>
-        Footer here
+        <button id="expandAll" class="miniBtn btn-exp" title="Expand All"></button>
+        <button id="contractAll" class="miniBtn btn-con" title="Contract All"></button>
       </div>
+      <span id="itemEditorSpan"></span>
     </div>
+
+    <ul id="hierarchyParent" style="padding-inline-start: 20px;">
+      <hierarchy-item v-for="(item, index) in hierarchy" :key="index" :item="item" />
+    </ul>
+  </div>
   </div>
 </body>
 

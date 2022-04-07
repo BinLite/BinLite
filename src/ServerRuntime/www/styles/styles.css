@@ -24,6 +24,7 @@ body {
   .content {
     width: 50%;
   }
+
   object {
     width: 50%;
   }
@@ -33,6 +34,7 @@ body {
   .content {
     width: 100%;
   }
+
   object {
     width: 100%;
   }
@@ -87,7 +89,16 @@ body {
   background-image: url("/img/contract.png");
 }
 
-input[type=text], select {
+.btn-mov {
+  background-image: url("/img/move.png");
+}
+
+.btn-can {
+  background-image: url("/img/cancel.png");
+}
+
+input[type=text],
+select {
   min-width: 15%;
   padding: 3px 5px;
   display: inline-block;
@@ -98,7 +109,9 @@ input[type=text], select {
   color: #e5e8eb;
 }
 
-input[type=text]:disabled, select:disabled, input[type=text]:read-only  {
+input[type=text]:disabled,
+select:disabled,
+input[type=text]:read-only {
   background-color: #15161c;
 }
 
@@ -138,4 +151,26 @@ textarea {
   color: #e5e8eb;
   font-family: Verdana, sans-serif;
   font-size: 16px;
+}
+
+input[type="checkbox"] {
+  appearance: none;
+  background-color: #e5e8eb;
+  margin: 1px;
+  padding: 0px;
+  border-radius: 100%;
+  transition-property: background-color;
+  transition-duration: 0.15s;
+}
+
+input[type="checkbox"]:checked {
+  background-color: #f4a950;
+}
+
+.greyscale {
+  -webkit-filter: grayscale(100%);
+  -moz-filter: grayscale(100%);
+  -o-filter: grayscale(100%);
+  -ms-filter: grayscale(100%);
+  filter: grayscale(100%);
 }

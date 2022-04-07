@@ -179,6 +179,8 @@
         public static Item Add(Item item, string caller)
         {
             if (Connector_Realm.GetPermission(caller, item.Realm) < Permissions.Write) { return null!; }
+            if (!ulong.TryParse(item.ID, out _)) { return null!; }
+
 
             if (!Validate(item, caller)) { return null!; }
             MySqlManager.Execute("INSERT INTO @p0items VALUES (@p1, @p2, @p3, @p4, @p5)",
