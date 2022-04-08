@@ -60,9 +60,9 @@ namespace BinLiteServer
             MySqlManager.Execute("INSERT INTO @p0users VALUES (@p1, @p2, @p3, @p4, @p5, @p6);",
                 user.ID, user.Email, user.Username, user.Enabled, user.Salt, user.Password);
 
-            EmailManager.Send(user.Email, 
+            EmailManager.Send(user, 
                 $"Acount Created", "Hello. An account has been created for you.\n\n" +
-                $"Username: {user.Username}\nPassword: {pw}\n\n@p0");
+                $"Username: {user.Username}\nPassword: {pw}");
             return user;
         }
 
@@ -167,10 +167,11 @@ namespace BinLiteServer
             var pw = RandomString(20);
             user.Password = BC.BCrypt.HashPassword(pw, user.Salt, true, BC.HashType.SHA512);
 
-            EmailManager.Send(user.Email,
+            EmailManager.Send(user,
                 $"Acount Created", $"Hello, {user.Username}. Your password has been reset by a server admin.\n\n" +
-                $"Username: {user.Username}\nPassword: {pw}\n\n@p0");
+                $"Username: {user.Username}\nPassword: {pw}");
 
+            LoginCache = new();
             return MySqlManager.Execute("UPDATE @p0users SET salt=@p1,password=@p2 WHERE id=@p3", user.Salt, user.Password, user.ID) > 0;
         }
 

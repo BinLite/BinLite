@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Authentication;
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Http;
@@ -6,6 +7,7 @@ using Microsoft.Extensions.DependencyInjection;
 
 using Newtonsoft.Json.Linq;
 
+using System.Security.Claims;
 using System.Security.Cryptography.X509Certificates;
 
 namespace BinLiteServer
@@ -25,32 +27,90 @@ namespace BinLiteServer
             builder.Services.AddAuthentication("BasicAuthentication")
                 .AddScheme<AuthenticationSchemeOptions, BasicAuthenticationHandler>
                 ("BasicAuthentication", null);
+            builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+                .AddCookie(options =>
+                {
+                    options.AccessDeniedPath = new PathString("/login.html");
+                    options.Cookie.Name = "BinLiteLogin";
+                    options.LoginPath = new PathString("/login.html");
+                    options.ReturnUrlParameter = CookieAuthenticationDefaults.ReturnUrlParameter;
+                    options.SlidingExpiration = true;
+                });
             builder.Services.AddAuthorization();
 
-            var certPath = Configuration.Get<string>("api.pfx");
-            var certPass = Configuration.Get<string>("api.pfx-pw");
-            if (!File.Exists(certPath))
-            {
-                throw new FileNotFoundException("Can't find provided api.pfx path.");
-            }
+            var https = Configuration.Get<JArray>("api.urls").Any(u => u.Value<string>()!.StartsWith("https"));
+            Logger.Info("Mode: " + (https ? "Secured HTTPS" : "Insecure HTTP"));
 
-            builder.WebHost.ConfigureKestrel((options) => {
-                options.ConfigureHttpsDefaults(listenOptions => {
-                    listenOptions.ServerCertificate = new X509Certificate2(certPath, certPass);
+            if (https)
+            {
+                var certPath = Configuration.Get<string>("api.pfx");
+                var certPass = Configuration.Get<string>("api.pfx-pw");
+                if (!File.Exists(certPath))
+                {
+                    throw new FileNotFoundException("Can't find provided api.pfx path.");
+                }
+
+                builder.WebHost.ConfigureKestrel((options) =>
+                {
+                    options.ConfigureHttpsDefaults(listenOptions =>
+                    {
+                        try
+                        {
+                            listenOptions.ServerCertificate = new X509Certificate2(certPath, certPass);
+
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.Fatal("Incorrect PFX password!\n" + ex);
+                            return;
+                        }
+                    });
                 });
-            });
+            }
 
             var app = builder.Build();
             app.UseFileServer();
             app.UseAuthentication();
             app.UseAuthorization();
 
-            app.UseHttpsRedirection();
-
             foreach (var url in Configuration.Get<JArray>("api.urls"))
             {
                 app.Urls.Add(url.Value<string>()!);
             }
+
+            app.MapPut("/signin", async (HttpContext ctx, string username, string password) =>
+            {
+                var u = Connector_User.Basic(username, password);
+                Logger.Info(username + " failed login attempt.");
+                if (u is null) { return false.ToJson(); }
+
+                var claims = new List<Claim>()
+                {
+                    new Claim("name", u.Username), 
+                    new Claim("id", u.ID.ToString())
+                };
+
+                var identity = new ClaimsIdentity(claims, CookieAuthenticationDefaults.AuthenticationScheme);
+                var authProperties = new AuthenticationProperties
+                {
+                    AllowRefresh = true,
+                    ExpiresUtc = DateTime.UtcNow.AddHours(6),
+                    IsPersistent = true,
+                };
+
+                await ctx.SignInAsync(CookieAuthenticationDefaults.AuthenticationScheme,
+                    new ClaimsPrincipal(identity), authProperties);
+
+                Logger.Info(username + " logged in.");
+
+                return true.ToJson();
+            });
+
+            app.MapGet("/signout.html", async (HttpContext ctx) =>
+            {
+                await ctx.SignOutAsync();
+                return Results.Redirect("/");
+            });
 
             app.MapGet("/api/ping", () => "pong").RequireAuthorization();
 
@@ -99,6 +159,12 @@ namespace BinLiteServer
                 return Connector_History.Get(page, ctx.Caller(), realm, source).ToJson();
             }
             app.MapGet("/api/realm/history", GetHistory).RequireAuthorization();
+
+            static string GetHistorySize(HttpContext ctx, string realm = null!, string source = null!)
+            {
+                return Connector_History.GetSize(ctx.Caller(), realm, source).ToJson();
+            }
+            app.MapGet("/api/realm/historysize", GetHistorySize).RequireAuthorization();
 
             app.MapGet("/api/ids", (int count) =>
             {

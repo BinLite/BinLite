@@ -35,6 +35,7 @@ body {
 .stretch {
   align-items: stretch;
 }
+
 .center {
   align-items: center;
   justify-content: center;

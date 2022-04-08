@@ -4,12 +4,13 @@ function logout() {
   var xmlHttp = new XMLHttpRequest();
   xmlHttp.open("get", "/api/ping", false, "null", "null"); // false for synchronous request
   xmlHttp.send();
-  window.location.replace("/");
+  window.parent.location.replace("/");
 }
 
 window.addEventListener("load", async function(event) {
   if (this.window.parent.location.href.includes("unauthorized.html")) { return; }
   if (this.window.parent.location.href.includes("api.html")) { return; }
+  if (this.window.parent.location.href.includes("login.html")) { return; }
   let user = await getUser();
   if (user && user.serverAdmin) {
     let admin = this.document.createElement("button");
@@ -24,7 +25,7 @@ window.addEventListener("load", async function(event) {
     log.classList.add("btn-log");
     log.onclick = logout;
 
-    this.document.getElementById("logoutSpan").appendChild(log);
+    this.document.getElementById("signoutA").appendChild(log);
 
 
     let pro = this.document.createElement("button");

@@ -30,8 +30,8 @@ namespace BinLiteServer
         {
             var serverAdmin = Connector_User.GetById(caller).ServerAdmin;
 
-            var r = MySqlManager.Read("SELECT * FROM @p0realms rm LEFT JOIN @p0realm_user ru ON (ru.realm=rm.id AND ru.user=@p1)" +
-                "WHERE (rm.owner=@p1 OR ru.permission>0 OR @p2) AND (rm.enabled=TRUE OR @p2);", caller, serverAdmin);
+            var r = MySqlManager.Read("SELECT rm.*, ru.permission as permission FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
+                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0);", caller, serverAdmin);
             return r.Select(d =>
             {
                 return new RealmPermission()
@@ -53,7 +53,7 @@ namespace BinLiteServer
             var serverAdmin = Connector_User.GetById(caller).ServerAdmin;
 
             var r = MySqlManager.Read("SELECT rm.* FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
-                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0);", caller, serverAdmin);
+                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0) AND rm.id=@p3;", caller, serverAdmin, id);
             if (r.Count == 0) { return null!; }
             return new Realm()
             {
@@ -74,8 +74,8 @@ namespace BinLiteServer
             MySqlManager.Execute("INSERT INTO @p0realms VALUES (@p1, @p2, @p3, @p4);", r.ID, r.Owner, r.Name, r.Enabled);
 
             var owner = Connector_User.GetAll().First(u => u.ID == r.Owner);
-            EmailManager.Send(owner.Email, "Realm Created", $"Hello, {owner.Username}.\n " +
-                $"This message is to inform you that a new realm, {r.Name}, has been created with your account as owner.\nThank you.\n\n@p0");
+            EmailManager.Send(owner, "Realm Created", $"Hello, {owner.Username}.\n " +
+                $"This message is to inform you that a new realm, {r.Name}, has been created with your account as owner.\nThank you.");
 
             return r;
         }
@@ -103,10 +103,9 @@ namespace BinLiteServer
         public static Permissions GetPermission(string user, string realm)
         {
             if (Connector_User.GetById(user).ServerAdmin) { return Permissions.Admin; }
-            var r = MySqlManager.Read("SELECT * FROM @p0realms WHERE owner=@p1 AND id=@p2 AND enabled=TRUE", user, realm);
-            if (r.Count > 0) { return Permissions.Admin; }
-            r = MySqlManager.Read("SELECT permission FROM @p0realm_user ru INNER JOIN @p0realms rm ON rm.id=ru.realm " +
-                "WHERE ru.realm=@p1 AND ru.user=@p2 AND rm.enabled=TRUE;", realm, user);
+
+            var r = MySqlManager.Read("SELECT ru.permission FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
+                "(ru.realm=rm.id AND ru.user=@p1) WHERE ru.permission > 0 AND rm.id=@p2;", user, realm);
             if (r.Count <= 0) { return Permissions.None; }
             return (Permissions)int.Parse(r[0]["permission"].ToString()!);
         }

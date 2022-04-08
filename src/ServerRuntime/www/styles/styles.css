@@ -98,6 +98,7 @@ body {
 }
 
 input[type=text],
+input[type=password],
 select {
   min-width: 15%;
   padding: 3px 5px;
@@ -142,6 +143,10 @@ object {
   display: flex;
 }
 
+.flex-vertical {
+  flex-direction: column;
+}
+
 .space-between {
   justify-content: space-between;
 }
@@ -158,7 +163,7 @@ input[type="checkbox"] {
   background-color: #e5e8eb;
   margin: 1px;
   padding: 0px;
-  border-radius: 100%;
+  border-radius: 25%;
   transition-property: background-color;
   transition-duration: 0.15s;
 }

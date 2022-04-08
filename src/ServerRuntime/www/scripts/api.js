@@ -4,9 +4,9 @@ function http(method, theUrl, data = null)
     var xmlHttp = new XMLHttpRequest();
     xmlHttp.open(method, theUrl, true); // false for synchronous request
     xmlHttp.onload = (e) => {
-      if (xmlHttp.status == 401) {
+      if (xmlHttp.status == 401 || xmlHttp.status == 302 || xmlHttp.responseText.includes("submitBtn")) {
         console.log({ status: xmlHttp.status, request: method + " " + theUrl, response: xmlHttp.responseText });
-        location.href = '/unauthorized.html';
+        location.href = '/login.html';
         return;
       }
       console.log({ status: xmlHttp.status, request: method + " " + theUrl, response: JSON.parse(xmlHttp.responseText) });
@@ -14,10 +14,11 @@ function http(method, theUrl, data = null)
     };
     xmlHttp.onerror = (e) => {
       console.log(e);
-      reject(e);
+      location.href = '/login.html';
     };
     if (data != null) {
       xmlHttp.setRequestHeader("Content-Type", "application/json;charset=UTF-8");
+      xmlHttp.setRequestHeader("X-Requested-With", "XMLHttpRequest");
     }
     xmlHttp.send(JSON.stringify(data));
   });
@@ -99,6 +100,10 @@ async function getHistory(page, realm, source) {
   return JSON.parse(await http("GET", `/api/realm/history?realm=${(realm ?? "")}&source=${(source ?? "")}&page=${page}`))
 }
 
+async function getHistorySize(page, realm, source) {
+  return JSON.parse(await http("GET", `/api/realm/historysize?realm=${(realm ?? "")}&source=${(source ?? "")}&page=${page}`))
+}
+
 //
 
 async function getIds(count) {
@@ -126,5 +131,6 @@ export {
   changeEmail,
   resetPassword,
   getHistory,
+  getHistorySize,
   getIds,
 }

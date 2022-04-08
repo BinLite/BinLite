@@ -34,6 +34,32 @@ namespace BinLiteServer
             return h;
         }
 
+        public static int GetSize(string caller, string realmFilter = null!, string sourceFilter = null!)
+        {
+            var callerUser = Connector_User.GetById(caller);
+            if ((realmFilter is null || realmFilter == "") && !callerUser.ServerAdmin) { return new(); }
+            if ((realmFilter is not null && realmFilter != "") && Connector_Realm.GetPermission(caller, realmFilter) < Permissions.Read) { return new(); }
+
+            var q = "SELECT COUNT(*) AS count FROM @p0history";
+
+            var p = new List<object>();
+            var pI = 1;
+
+            var conditions = new List<string>();
+
+            if (sourceFilter is not null && sourceFilter != "") { conditions.Add($"source=@p{pI++}"); p.Add(sourceFilter); }
+            if (realmFilter is not null && realmFilter != "") { conditions.Add($"realm=@p{pI++}"); p.Add(realmFilter); }
+
+            var pageSize = 100;
+            if (conditions.Count > 0)
+            {
+                q += " WHERE (" + string.Join(") AND (", conditions) + $")";
+            }
+
+            var rows = MySqlManager.Read(q, p.ToArray());
+            return (int)Math.Ceiling(float.Parse(rows[0]["count"].ToString()!) / pageSize);
+        }
+
         public static List<History> Get(int page, string caller, string realmFilter = null!, string sourceFilter = null!)
         {
             page--;
@@ -56,7 +82,7 @@ namespace BinLiteServer
             {
                 q += " WHERE (" + string.Join(") AND (", conditions) + $")";
             }
-            q += $" LIMIT {(page * pageSize)}, {(pageSize)};";
+            q += $" ORDER BY id DESC LIMIT {(page * pageSize)}, {(pageSize)};";
 
             var rows = MySqlManager.Read(q, p.ToArray());
             return rows.Select(d => new History()

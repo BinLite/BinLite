@@ -33,6 +33,26 @@ document.getElementById("changeEmail").onclick = async () => {
   }
 };
 document.getElementById("changePassword").onclick = async () => {
+  let oldPW = document.getElementById("oldpw").value.trim();
+  let newPW = document.getElementById("newpw").value.trim();
+
+  if (newPW.length < 8) {
+    alert("Password must be at least 8 characters long.");
+    return;
+  }
+
+  let r = await changePassword(oldPW, newPW);
+  console.log(r);
+  if (r) {
+    alert("Password changed.");
+    location.reload();
+  } else {
+    alert("Failed to change password.");
+    location.reload();
+  }
+
+
+/*
   let oldPW = prompt("Enter current password: ", "");
   if (oldPW == null) { return; }
   let newPW = prompt("Enter new password: ", "");
@@ -46,4 +66,5 @@ document.getElementById("changePassword").onclick = async () => {
     alert("Failed to change password.");
     location.reload();
   }
+   */
 };

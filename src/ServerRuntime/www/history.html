@@ -6,7 +6,7 @@
   <script src="/scripts/main.js" type="module"></script>
   <script src="/scripts/history.js" type="module"></script>
   <link rel="stylesheet" href="/styles/styles.css">
-  <link rel="stylesheet" href="/styles/table.css">
+  <link rel="stylesheet" href="/styles/history.css">
   <link rel="icon" type="image/x-icon" href="/favicon.png">
   <title>BinLite</title>
 </head>
@@ -14,18 +14,15 @@
 <body>
   <object type="text/html" data="templates/header.html" height="44"></object>
   <div class="content">
-    <div class="tableOuter">
-      <p class="title">Realms</p>
-      <table id="realmTable">
-        <tr>
-          <th>Timestamp</th>
-          <th>Action</th>
-          <th>User</th>
-          <th>Realm</th>
-        </tr>
-      </table>
+    <p class="title">History</p>
+
+    <div class="pagination">
+      <a id="leftArrow" class="disabled">&laquo;</a>
+      <p id="pageNum">1</p>
+      <a id="rightArrow" class="enabled">&raquo;</a>
     </div>
-  </div>
+    <div id="ledgerParent" class="flex flex-vertical">
+    </div>
 </body>
 
 </html>

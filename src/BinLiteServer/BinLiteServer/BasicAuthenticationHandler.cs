@@ -35,13 +35,13 @@ namespace BinLiteServer
                 }
 
                 Response.StatusCode = 401;
-                Response.Headers.Add("WWW-Authenticate", "Basic realm=\"dotnetthoughts.net\"");
+                //Response.Headers.Add("WWW-Authenticate", "Basic realm=\"dotnetthoughts.net\"");
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
             }
             else
             {
                 Response.StatusCode = 401;
-                Response.Headers.Add("WWW-Authenticate", "Basic realm=\"dotnetthoughts.net\"");
+                //Response.Headers.Add("WWW-Authenticate", "Basic realm=\"dotnetthoughts.net\"");
                 return Task.FromResult(AuthenticateResult.Fail("Invalid Authorization Header"));
             }
         }

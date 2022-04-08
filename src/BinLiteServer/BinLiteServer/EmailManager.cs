@@ -1,21 +1,39 @@
-﻿using System.Net;
-using System.Net.Mail;
+﻿using MailKit.Net.Smtp;
+using MailKit.Security;
+
+using MimeKit;
+using MimeKit.Text;
 
 namespace BinLiteServer
 {
     public static class EmailManager
     {
-        public static void Send(string recipient, string subject, string body)
+        public static void Send(User recipient, string subject, string body)
         {
-            var url = Configuration.Get<string>("email.siteUrl");
-            body = body.Replace("@p0", url);
+            var template = File.ReadAllText(Configuration.Get<string>("email.template"));
+            template = template
+                .Replace("@content", body.Replace("\n", "<br>"))
+                .Replace("@subject", subject)
+                .Replace("@url", Configuration.Get<string>("email.siteUrl"));
 
-            var client = new SmtpClient(Configuration.Get<string>("email.url"), Configuration.Get<int>("email.port"))
+            var sender = Configuration.Get<string>("email.email");
+
+            var message = new MimeMessage()
             {
-                Credentials = new NetworkCredential(Configuration.Get<string>("email.email"), Configuration.Get<string>("email.password")),
-                EnableSsl = Configuration.Get<bool>("email.enableSSL")
+                Subject = subject,
+                Body = new TextPart(TextFormat.Html)
+                {
+                    Text = template,
+                }
             };
-            client.Send(Configuration.Get<string>("email.email"), recipient, subject, body);
+            message.From.Add(new MailboxAddress(Configuration.Get<string>("email.from"), sender));
+            message.To.Add(new MailboxAddress(recipient.Username, recipient.Email));
+
+            using var client = new SmtpClient();
+            client.Connect(Configuration.Get<string>("email.smtpUrl"), Configuration.Get<int>("email.port"), SecureSocketOptions.StartTls);
+            client.Authenticate(sender, Configuration.Get<string>("email.password"));
+            client.Send(message);
+            client.Disconnect(true);
         }
     }
 }
