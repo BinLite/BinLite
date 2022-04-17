@@ -1,4 +1,5 @@
 import { getItems, getRealms, deleteItem, updateItem } from './api.js';
+import { cleanxss } from './utils.js';
 
 let allRealms = [];
 let currentRealm = 0;
@@ -22,7 +23,7 @@ window.onload = async () => {
   for (var r of allRealms) {
     var opt = document.createElement('option');
     opt.value = r.realm.id;
-    opt.innerHTML = r.realm.name;
+    opt.innerHTML = cleanxss(r.realm.name);
     selector.appendChild(opt);
   }
   selector.value = allRealms[0].realm.id;
@@ -55,7 +56,7 @@ function loadItemEditorSpan() {
   addBtn.style.marginRight = "15px";
 
   if (moving) {
-    span.innerHTML += `Moving ${selected.length} items`;
+    span.innerHTML += cleanxss(`Moving ${selected.length} items`);
     let canBtn = document.createElement("button");
     canBtn.onclick = async () => {
       console.log("Cancel clicked");
@@ -70,7 +71,7 @@ function loadItemEditorSpan() {
     return;
   }
 
-  span.innerHTML += `${selected.length} selected`;
+  span.innerHTML += cleanxss(`${selected.length} selected`);
 
   let subBtn = document.createElement("button");
   subBtn.onclick = async () => {
@@ -163,7 +164,7 @@ async function setupHierarchy(items, expanded) {
     if (item.match) {
       span.classList.add("match");
     }
-    span.innerHTML += item.name;
+    span.innerHTML += cleanxss(item.name);
     rowLeft.appendChild(span);
 
     addButtons(rowRight, item);
@@ -277,7 +278,7 @@ async function searchBxChanged() {
     return;
   }
 
-  let results = items.filter(i => i.id == term || i.name.toLowerCase().includes(term.toLowerCase()));
+  let results = items.filter(i => i.id == term || i.name.toLowerCase().includes(term.toLowerCase()) || i.description.toLowerCase().include(term.toLowerCase()));
   let results2 = []
   for (var r of results) {
     r.match = true;

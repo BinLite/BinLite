@@ -120,15 +120,15 @@ async function loadUserTable() {
     let tr = document.createElement("tr");
 
     let id = document.createElement("td");
-    id.innerHTML = u.id;
+    id.innerHTML = cleanxss(u.id);
     tr.appendChild(id);
 
     let username = document.createElement("td");
-    username.innerHTML = u.username;
+    username.innerHTML = cleanxss(u.username);
     tr.appendChild(username);
 
     let email = document.createElement("td");
-    email.innerHTML = u.email;
+    email.innerHTML = cleanxss(u.email);
     tr.appendChild(email);
 
     let actions = document.createElement("td");

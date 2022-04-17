@@ -51,7 +51,6 @@ namespace BinLiteServer
                 {
                     var startExit = DateTime.Now;
                     Logger.Info("Exiting...");
-                    Logger.Info("Stopping WebSocket server...");
                     Logger.Info("Stopping MySql connection pool...");
                     MySqlConnection.ClearAllPools();
                     var timeExit = (DateTime.Now - startExit).TotalSeconds;

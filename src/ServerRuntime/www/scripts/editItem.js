@@ -1,4 +1,5 @@
 import { getItems, createItem, getIds, getRealm, updateItem } from './api.js';
+import {cleanxss} from './utils.js';
 
 let items = [];
 let parent = {};
@@ -29,9 +30,9 @@ window.onload = async () => {
   let parentP = document.getElementById("parentP")
   if (parent != null) {
     let parents = await getParents(items, parent);
-    parentP.innerHTML = realm.name + " - " + parents.map(p => p.name).join("/") + (parents.length > 0 ? "/" : "") + parent.name;
+    parentP.innerHTML = cleanxss(realm.name + " - " + parents.map(p => p.name).join("/") + (parents.length > 0 ? "/" : "") + parent.name);
   } else {
-    parentP.innerHTML = realm.name;
+    parentP.innerHTML = cleanxss(realm.name);
   }
 
   if (mode == "create") {

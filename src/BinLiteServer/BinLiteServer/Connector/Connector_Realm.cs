@@ -30,8 +30,7 @@ namespace BinLiteServer
         {
             var serverAdmin = Connector_User.GetById(caller).ServerAdmin;
 
-            var r = MySqlManager.Read("SELECT rm.*, ru.permission as permission FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
-                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0);", caller, serverAdmin);
+            var r = MySqlManager.Read("SELECT * FROM (SELECT rm.*, IF(@p2 OR rm.owner=@p1, 3, ru.permission) AS permission FROM @p0realms rm LEFT JOIN @p0realm_user ru ON (ru.realm=rm.id AND ru.user=@p1)) t WHERE t.permission > 0;", caller, serverAdmin);
             return r.Select(d =>
             {
                 return new RealmPermission()
@@ -53,7 +52,7 @@ namespace BinLiteServer
             var serverAdmin = Connector_User.GetById(caller).ServerAdmin;
 
             var r = MySqlManager.Read("SELECT rm.* FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
-                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0) AND rm.id=@p3;", caller, serverAdmin, id);
+                "(ru.realm=rm.id AND ru.user=@p1) WHERE (@p2 OR ru.permission > 0 OR rm.owner=@p1) AND rm.id=@p3;", caller, serverAdmin, id);
             if (r.Count == 0) { return null!; }
             return new Realm()
             {
@@ -102,10 +101,10 @@ namespace BinLiteServer
 
         public static Permissions GetPermission(string user, string realm)
         {
-            if (Connector_User.GetById(user).ServerAdmin) { return Permissions.Admin; }
+            var admin = Connector_User.GetById(user).ServerAdmin;
 
-            var r = MySqlManager.Read("SELECT ru.permission FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
-                "(ru.realm=rm.id AND ru.user=@p1) WHERE ru.permission > 0 AND rm.id=@p2;", user, realm);
+            var r = MySqlManager.Read("SELECT IF(@p2 OR rm.owner=@p1, 3, ru.permission) AS permission FROM @p0realms rm LEFT JOIN @p0realm_user ru ON " +
+                "(ru.realm=rm.id AND ru.user=@p1) WHERE rm.id=@p3;", user, admin, realm);
             if (r.Count <= 0) { return Permissions.None; }
             return (Permissions)int.Parse(r[0]["permission"].ToString()!);
         }

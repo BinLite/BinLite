@@ -15,9 +15,9 @@ window.onload = async () => {
     editingUser = users.find(u => u.id == urlParams.get('user'));
   }
 
-  document.getElementById("idP").innerHTML = editingUser.id;
-  document.getElementById("usernameP").innerHTML = editingUser.username;
-  document.getElementById("emailP").innerHTML = editingUser.email;
+  document.getElementById("idP").innerHTML = cleanxss(editingUser.id);
+  document.getElementById("usernameP").innerHTML = cleanxss(editingUser.username);
+  document.getElementById("emailP").innerHTML = cleanxss(editingUser.email);
 };
 
 document.getElementById("changeEmail").onclick = async () => {
@@ -50,21 +50,4 @@ document.getElementById("changePassword").onclick = async () => {
     alert("Failed to change password.");
     location.reload();
   }
-
-
-/*
-  let oldPW = prompt("Enter current password: ", "");
-  if (oldPW == null) { return; }
-  let newPW = prompt("Enter new password: ", "");
-  if (newPW == null) { return; }
-  let r = await changePassword(oldPW, newPW);
-  console.log(r);
-  if (r) {
-    alert("Password changed.");
-    location.reload();
-  } else {
-    alert("Failed to change password.");
-    location.reload();
-  }
-   */
 };

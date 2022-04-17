@@ -14,14 +14,14 @@ window.onload = async () => {
   for (var u of users) {
     var opt = document.createElement('option');
     opt.value = u.id;
-    opt.innerHTML = u.username;
+    opt.innerHTML = cleanxss(u.username);
     selector.appendChild(opt);
   }
   owner = users.find(u => u.id == editingRealm.realm.owner);
   selector.value = owner.id;
 
   document.getElementById("nameBx").value = editingRealm.realm.name;
-  document.getElementById("idText").innerText = editingRealm.realm.id;
+  document.getElementById("idText").innerText = cleanxss(editingRealm.realm.id);
   loadUserTable();
 };
 
@@ -50,7 +50,7 @@ async function loadUserTable() {
     let tr = document.createElement("tr");
 
     let username = document.createElement("td");
-    username.innerHTML = u.username;
+    username.innerHTML = cleanxss(u.username);
     tr.appendChild(username);
 
     let permission = document.createElement("td");

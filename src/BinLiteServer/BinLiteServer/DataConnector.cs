@@ -2,9 +2,6 @@
 
 namespace BinLiteServer
 {
-    /// <summary>
-    /// This attribute exists as a marker for other classes with similar functionality.
-    /// </summary>
     [AttributeUsage(AttributeTargets.Class)]
     public class DataConnector : Attribute
     {

@@ -1,4 +1,5 @@
 import { getRealms, getUsers, getUser, getHistory, getItems, getHistorySize } from './api.js';
+import { cleanxss } from './utils.js';
 
 let user;
 let users;
@@ -39,7 +40,7 @@ window.onload = async () => {
 
   console.log(allItems);
   let size = await getHistorySize(page, realm, null);
-  document.getElementById("pageNum").innerHTML = `${page}/${size}`;
+  document.getElementById("pageNum").innerHTML = cleanxss(`${page}/${size}`);
   load();
 }
 
@@ -49,7 +50,7 @@ document.getElementById("leftArrow").onclick = async () => {
   page = page < 1 ? 1 : page;
   load();
   let size = await getHistorySize(page, realm, null);
-  document.getElementById("pageNum").innerHTML = `${page}/${size}`;
+  document.getElementById("pageNum").innerHTML = cleanxss(`${page}/${size}`);
 }
 
 document.getElementById("rightArrow").onclick = async () => {
@@ -57,7 +58,7 @@ document.getElementById("rightArrow").onclick = async () => {
   page++;
   load();
   let size = await getHistorySize(page, realm, null);
-  document.getElementById("pageNum").innerHTML = `${page}/${size}`;
+  document.getElementById("pageNum").innerHTML = cleanxss(`${page}/${size}`);
 }
 
 function capitalizeFirstLetter(string) {
@@ -99,11 +100,11 @@ async function load() {
     let time = new Date(h.timestamp);
     time = time.toLocaleString();
 
-    let content = `<div class="color">${time} - ${typeMap[h.type]} - ${u.username}</div>`;
+    let content = `<div class="color">${time} - ${typeMap[h.type]} - ${cleanxss(u.username)}</div>`;
 
     if (h.type == 7) {
       let ent = allItems.find(i => i.id == h.entity);
-      content += `<br>${h.entity}${(ent == undefined ? "" : ` <div class="color">-</div> ` + ent.name)}<br>${
+      content += `<br>${cleanxss(h.entity)}${(ent == undefined ? "" : ` <div class="color">-</div> ` + cleanxss(ent.name))}<br>${
         capitalizeFirstLetter(h.field)} <div class="color">-</div> `;
       if (h.field == "parent") {
         let o = allItems.find(i => i.id == h.from);
@@ -112,13 +113,12 @@ async function load() {
         o = o == undefined ? "^" : `${o.name} (${o.id})`;
         n = n == undefined ? "^" : `${n.name} (${n.id})`;
 
-        content += `${o} <div class="color">-></div> ${n}`;
+        content += `${cleanxss(o)} <div class="color">-></div> ${cleanxss(n)}`;
       } else {
-        content += `(${h.from}) <div class="color">-></div> (${h.to})`;
+        content += `${cleanxss(h.from)} <div class="color">-></div> ${cleanxss(h.to)}`;
       }
     } else if (h.type == 5) {
       let ent = JSON.parse(h.to);
-
 
       let p = allItems.find(i => i.id == ent.parent);
       p = p == undefined ? "^" : `${p.name} (${p.id})`;
@@ -128,7 +128,7 @@ async function load() {
       console.log(realms);
       realm = `${realm.name} (${realm.id})`;
 
-      content += `<br>${h.entity}${(ent == undefined ? "" : ` <div class="color">-</div> ` + ent.name)}<br>
+      content += `<br>${cleanxss(h.entity)}${(ent == undefined ? "" : ` <div class="color">-</div> ` + cleanxss(ent.name))}<br>
       Parent: ${p}<br>
       Description: ${ent.description}<br>
       Realm: ${realm}`;
@@ -144,7 +144,7 @@ async function load() {
       console.log(realms);
       realm = `${realm.name} (${realm.id})`;
 
-      content += `<br>${h.entity}${(ent == undefined ? "" : ` <div class="color">-</div> ` + ent.name)}<br>
+      content += `<br>${cleanxss(h.entity)}${(ent == undefined ? "" : ` <div class="color">-</div> ` + cleanxss(ent.name))}<br>
       Parent: ${p}<br>
       Description: ${ent.description}<br>
       Realm: ${realm}`;
