@@ -1,3 +1,6 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
+using Microsoft.AspNetCore.Authorization;
+
 namespace BinLite
 {
     public class Program
@@ -5,25 +8,48 @@ namespace BinLite
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
+            SiteDbContext.ConnectionString = builder.Configuration["sql:ConnectionString"];
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
+            builder.Services.AddAuthorization(options =>
+            {
+                options.FallbackPolicy = new AuthorizationPolicyBuilder()
+                    .RequireAuthenticatedUser()
+                    .Build();
+            });
+            builder.Services.AddAuthentication(options =>
+            {
+                options.DefaultScheme = "Discord";
+            })
+
+            .AddCookie(options =>
+            {
+                options.LoginPath = "/signin";
+                options.LogoutPath = "/signout";
+            })
+
+            .AddDiscord(options =>
+            {
+                options.ClientId = builder.Configuration["discord:clientid"];
+                options.ClientSecret = builder.Configuration["discord:clientsecret"];
+                options.Scope.Add("identify");
+                options.SignInScheme = CookieAuthenticationDefaults.AuthenticationScheme;
+            });
 
             var app = builder.Build();
 
-            // Configure the HTTP request pipeline.
             if (!app.Environment.IsDevelopment())
             {
                 app.UseExceptionHandler("/Home/Error");
-                // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
             app.UseStaticFiles();
 
             app.UseRouting();
 
+            app.UseAuthentication();
             app.UseAuthorization();
 
             app.MapControllerRoute(

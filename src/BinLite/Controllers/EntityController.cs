@@ -1,28 +1,26 @@
 ﻿using BinLite.Models;
 
-using Microsoft.AspNetCore.Authentication;
-using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.AspNetCore.Mvc;
 
 using System.Diagnostics;
 
 namespace BinLite.Controllers
 {
-    public class HomeController : Controller
+    public class EntityController : Controller
     {
         private readonly ILogger<HomeController> _logger;
 
-        public HomeController(ILogger<HomeController> logger)
+        public EntityController(ILogger<HomeController> logger)
         {
             _logger = logger;
         }
 
-        public IActionResult Index() => View();
+        public IActionResult Index() => Redirect("/");
 
-        public async Task<IActionResult> Logout()
+        public IActionResult List(string entity)
         {
-            await HttpContext.SignOutAsync(CookieAuthenticationDefaults.AuthenticationScheme);
-            return RedirectToAction("Index", "Home");
+            ViewData["entity"] = entity;
+            return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
