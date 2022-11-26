@@ -20,19 +20,10 @@
                 </div></a>
                 @if (User.Identity is not null && User.Identity.IsAuthenticated)
                 {
-                    var entityList = Assembly.GetExecutingAssembly().GetTypes()
-                        .Where(p => typeof(IEntityBase).IsAssignableFrom(p) && typeof(IEntityBase) != p)
-                        .Select(s => s.Name)
-                        .OrderBy(e => e)
-                        .ToList();
-                    
                     <div class="navCategory">ENTITIES</div>
-                    foreach (var e in entityList)
-                    {
-                        <a asp-controller="Entity" asp-action="List" asp-route-entity="@e"><div class="navItem @(ViewData["Title"]?.ToString() == "List - " + e ? "navItemActive" : "")">
-                            @e
-                        </div></a>
-                    }
+                    <a asp-controller="Entity" asp-action="List" asp-route-entity="e"><div class="navItem @(ViewData["Title"]?.ToString() == "List - " ? "navItemActive" : "")">
+                        e
+                    </div></a>
                 }
             </div>
             <div class="navCategory">USER</div>

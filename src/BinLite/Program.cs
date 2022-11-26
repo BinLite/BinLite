@@ -8,7 +8,9 @@ namespace BinLite
         public static void Main(string[] args)
         {
             var builder = WebApplication.CreateBuilder(args);
-            SiteDbContext.ConnectionString = builder.Configuration["sql:ConnectionString"];
+            SiteDbContext.ConnectionString = builder.Configuration["SQL:BaseConnectionString"];
+
+            builder.Services.AddDbContext<SiteDbContext>();
 
             // Add services to the container.
             builder.Services.AddControllersWithViews();
